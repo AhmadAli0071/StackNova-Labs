@@ -16,6 +16,7 @@ router.post(
   [
     body('name').trim().notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Valid email is required'),
+    body('phone').optional().trim(),
     body('message').trim().notEmpty().withMessage('Message is required'),
     validate,
   ],
