@@ -252,18 +252,20 @@ export default function App() {
                   <p className="text-zinc-500 mb-8 md:mb-10 text-sm md:text-base leading-relaxed">
                     Ready to deploy? Our technical architects are on standby for your next major release.
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left">
+                  <div className="flex flex-col gap-5 text-left">
                     {[
                       { icon: <Mail size={16} />, label: 'Email', val: 'CONTACT@SN.LABS' },
                       { icon: <Phone size={16} />, label: 'WhatsApp', val: '+92 335 4583955' },
                       { icon: <Phone size={16} />, label: 'Call Us', val: '+92 322 5511684' }
                     ].map((item) => (
-                      <div key={item.label} className="group cursor-pointer">
-                        <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 group-hover:border-brand-red transition-colors mb-3 mx-auto lg:mx-0">
+                      <div key={item.label} className="group cursor-pointer flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 group-hover:border-brand-red transition-colors shrink-0">
                           <div className="text-zinc-400 group-hover:text-brand-red transition-colors">{item.icon}</div>
                         </div>
-                        <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest mb-0.5 text-center lg:text-left">{item.label}</p>
-                        <p className="text-white font-bold text-[10px] md:text-xs text-center lg:text-left">{item.val}</p>
+                        <div>
+                          <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{item.label}</p>
+                          <p className="text-white font-bold text-[11px] md:text-xs">{item.val}</p>
+                        </div>
                       </div>
                     ))}
                   </div>

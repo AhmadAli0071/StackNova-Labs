@@ -4,14 +4,14 @@ import jwt from 'jsonwebtoken';
 export const verifyPin = async (req: Request, res: Response) => {
   try {
     const { pin } = req.body;
-    const adminPin = process.env.ADMIN_PIN || '123456';
+    const adminPin = String(process.env.ADMIN_PIN || '123456').trim();
 
     if (!pin) {
       res.status(400).json({ success: false, message: 'PIN is required' });
       return;
     }
 
-    if (pin !== adminPin) {
+    if (String(pin).trim() !== adminPin) {
       res.status(401).json({ success: false, message: 'Invalid PIN' });
       return;
     }
