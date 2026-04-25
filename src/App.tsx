@@ -95,7 +95,7 @@ export default function App() {
   const [showThankYou, setShowThankYou] = useState(false);
 
   const submitForm = async (data: { name: string; email: string; phone: string; message: string }) => {
-    const res = await fetch('http://localhost:5000/api/contacts', {
+    const res = await fetch('/api/contacts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
