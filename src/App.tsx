@@ -157,7 +157,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <img src="/logo.jpeg" alt="StackNova Labs" className="w-12 h-12 rounded-2xl object-cover border border-white/10 shadow-[0_0_20px_rgba(230,0,0,0.2)]" />
+              <img src="/logo.webp" alt="StackNova Labs" className="w-12 h-12 rounded-2xl object-cover border border-white/10 shadow-[0_0_20px_rgba(230,0,0,0.2)]" />
               <span className="font-mono font-bold text-2xl tracking-tighter text-white">
                 STACKNOVA <span className="text-brand-red text-glow">LABS</span>
               </span>
@@ -577,7 +577,7 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16">
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center justify-center md:justify-start gap-3 mb-6 md:mb-8">
-                  <img src="/logo.jpeg" alt="StackNova Labs" className="w-10 h-10 rounded-xl object-cover border border-white/10" />
+                  <img src="/logo.webp" alt="StackNova Labs" className="w-10 h-10 rounded-xl object-cover border border-white/10" />
                   <span className="font-mono font-bold text-xl md:text-2xl tracking-tighter text-white uppercase italic">
                     STACKNOVA <span className="text-brand-red">LABS</span>
                   </span>
