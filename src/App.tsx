@@ -21,7 +21,8 @@ import {
   X,
   Layers,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  CheckCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -86,6 +87,52 @@ const stats = [
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [showMissionModal, setShowMissionModal] = useState(false);
+  const [missionData, setMissionData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [missionStatus, setMissionStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  const submitForm = async (data: { name: string; email: string; phone: string; message: string }) => {
+    const res = await fetch('http://localhost:5000/api/contacts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormStatus('sending');
+    try {
+      await submitForm(formData);
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormStatus('success');
+      setShowThankYou(true);
+      setTimeout(() => { setFormStatus('idle'); setShowThankYou(false); }, 5000);
+    } catch {
+      setFormStatus('error');
+      setTimeout(() => setFormStatus('idle'), 4000);
+    }
+  };
+
+  const handleMissionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMissionStatus('sending');
+    try {
+      await submitForm(missionData);
+      setMissionData({ name: '', email: '', phone: '', message: '' });
+      setMissionStatus('success');
+      setShowMissionModal(false);
+      setShowThankYou(true);
+      setTimeout(() => { setMissionStatus('idle'); setShowThankYou(false); }, 5000);
+    } catch {
+      setMissionStatus('error');
+      setTimeout(() => setMissionStatus('idle'), 4000);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -110,9 +157,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center rounded-2xl shadow-[0_0_20px_rgba(230,0,0,0.2)] group hover:border-brand-red/50 transition-all duration-500">
-                <span className="text-brand-red font-black text-2xl group-hover:scale-110 transition-transform">SN</span>
-              </div>
+              <img src="/logo.jpeg" alt="StackNova Labs" className="w-12 h-12 rounded-2xl object-cover border border-white/10 shadow-[0_0_20px_rgba(230,0,0,0.2)]" />
               <span className="font-mono font-bold text-2xl tracking-tighter text-white">
                 STACKNOVA <span className="text-brand-red text-glow">LABS</span>
               </span>
@@ -130,7 +175,7 @@ export default function App() {
                   <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-brand-red transition-all duration-300 group-hover:w-full"></span>
                 </a>
               ))}
-              <button className="px-8 py-3 glass-button text-white text-xs font-black uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
+              <button onClick={() => setShowMissionModal(true)} className="px-8 py-3 glass-button text-white text-xs font-black uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
                 Launch Project
               </button>
             </div>
@@ -198,7 +243,7 @@ export default function App() {
                 &lt;WE ARCHITECT FUTURE-READY DIGITAL FRAMEWORKS FOR THE GLOBAL ELITE /&gt;
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <button className="group w-full sm:w-auto px-10 py-5 bg-brand-red text-white text-sm font-black rounded-full flex items-center justify-center gap-3 hover:bg-brand-red-dark transition-all duration-500 shadow-[0_15px_30px_rgba(230,0,0,0.3)] uppercase tracking-widest">
+                <button onClick={() => setShowMissionModal(true)} className="group w-full sm:w-auto px-10 py-5 bg-brand-red text-white text-sm font-black rounded-full flex items-center justify-center gap-3 hover:bg-brand-red-dark transition-all duration-500 shadow-[0_15px_30px_rgba(230,0,0,0.3)] uppercase tracking-widest">
                   INITIATE MISSION <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </button>
                 <button className="w-full sm:w-auto px-10 py-5 glass-button text-white text-sm font-black rounded-full hover:bg-white/10 transition-all duration-500 uppercase tracking-widest">
@@ -347,10 +392,11 @@ export default function App() {
                   <h2 className="text-4xl md:text-7xl font-black text-white mb-6 md:mb-10 uppercase tracking-tighter italic">Let's Build<br />The Future.</h2>
                   <p className="text-zinc-500 mb-10 md:mb-12 text-sm md:text-lg leading-relaxed font-medium">Ready to deploy? Our technical architects are on standby for your next major release.</p>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 text-left">
                     {[
                       { icon: <Mail size={18} />, label: 'Email', val: 'CONTACT@SN.LABS' },
-                      { icon: <Phone size={18} />, label: 'Comm Link', val: '+1 (888) NOVA' }
+                      { icon: <Phone size={18} />, label: 'WhatsApp', val: '+92 335 4583955' },
+                      { icon: <Phone size={18} />, label: 'Call Us', val: '+92 322 5511684' }
                     ].map((item, i) => (
                       <div key={i} className="group cursor-pointer">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-brand-red transition-all duration-500 mb-4 mx-auto lg:mx-0">
@@ -365,26 +411,43 @@ export default function App() {
                   </div>
                 </div>
 
-                <form className="space-y-4 md:space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                   <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                     <input 
                       type="text" 
                       placeholder="CALLSIGN / NAME" 
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
                       className="w-full px-6 md:px-8 py-4 md:py-5 bg-black/40 border-2 border-white/5 rounded-2xl md:rounded-3xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
                     />
                     <input 
                       type="email" 
                       placeholder="COMM EMAIL" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
                       className="w-full px-6 md:px-8 py-4 md:py-5 bg-black/40 border-2 border-white/5 rounded-2xl md:rounded-3xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
                     />
                   </div>
+                  <input 
+                    type="tel" 
+                    placeholder="MOBILE / COMM LINK" 
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    required
+                    className="w-full px-6 md:px-8 py-4 md:py-5 bg-black/40 border-2 border-white/5 rounded-2xl md:rounded-3xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
+                  />
                   <textarea 
                     rows={4} 
                     placeholder="OBJECTIVE / VISION" 
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    required
                     className="w-full px-6 md:px-8 py-4 md:py-5 bg-black/40 border-2 border-white/5 rounded-2xl md:rounded-[2.5rem] focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
                   ></textarea>
-                  <button className="w-full py-5 md:py-6 bg-brand-red text-white text-xs md:text-sm font-black rounded-full hover:bg-brand-red-dark transition-all duration-500 shadow-[0_20px_40px_rgba(230,0,0,0.3)] uppercase tracking-[0.2em]">
-                    Transmit Objective
+                  <button type="submit" disabled={formStatus === 'sending'} className="w-full py-5 md:py-6 bg-brand-red text-white text-xs md:text-sm font-black rounded-full hover:bg-brand-red-dark transition-all duration-500 shadow-[0_20px_40px_rgba(230,0,0,0.3)] uppercase tracking-[0.2em] disabled:opacity-50">
+                    {formStatus === 'sending' ? 'TRANSMITTING...' : formStatus === 'success' ? 'TRANSMITTED SUCCESSFULLY!' : formStatus === 'error' ? 'TRANSMISSION FAILED - RETRY' : 'TRANSMIT OBJECTIVE'}
                   </button>
                 </form>
               </div>
@@ -393,6 +456,120 @@ export default function App() {
         </section>
       </main>
 
+      {/* Mission Modal Popup */}
+      <AnimatePresence>
+        {showMissionModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          >
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowMissionModal(false)} />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 40 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              className="relative w-full max-w-lg glass-card p-8 md:p-12 !rounded-[2rem] border-brand-red/20"
+            >
+              <button onClick={() => setShowMissionModal(false)} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors">
+                <X size={24} />
+              </button>
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-red/10 border border-brand-red/20 rounded-2xl mb-4">
+                  <Zap className="w-8 h-8 text-brand-red" />
+                </div>
+                <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter italic">Initiate Mission</h3>
+                <p className="text-zinc-500 text-xs font-mono mt-2 uppercase tracking-widest">Deploy your objectives</p>
+              </div>
+              <form onSubmit={handleMissionSubmit} className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="CALLSIGN / NAME"
+                  value={missionData.name}
+                  onChange={(e) => setMissionData({ ...missionData, name: e.target.value })}
+                  required
+                  className="w-full px-6 py-4 bg-black/60 border-2 border-white/5 rounded-2xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
+                />
+                <input
+                  type="email"
+                  placeholder="COMM EMAIL"
+                  value={missionData.email}
+                  onChange={(e) => setMissionData({ ...missionData, email: e.target.value })}
+                  required
+                  className="w-full px-6 py-4 bg-black/60 border-2 border-white/5 rounded-2xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
+                />
+                <input
+                  type="tel"
+                  placeholder="MOBILE / COMM LINK"
+                  value={missionData.phone}
+                  onChange={(e) => setMissionData({ ...missionData, phone: e.target.value })}
+                  required
+                  className="w-full px-6 py-4 bg-black/60 border-2 border-white/5 rounded-2xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all"
+                />
+                <textarea
+                  rows={3}
+                  placeholder="MISSION BRIEFING / VISION"
+                  value={missionData.message}
+                  onChange={(e) => setMissionData({ ...missionData, message: e.target.value })}
+                  required
+                  className="w-full px-6 py-4 bg-black/60 border-2 border-white/5 rounded-2xl focus:border-brand-red outline-none text-white text-[10px] font-mono uppercase tracking-widest transition-all resize-none"
+                ></textarea>
+                <button
+                  type="submit"
+                  disabled={missionStatus === 'sending'}
+                  className="w-full py-5 bg-brand-red text-white text-xs font-black rounded-full hover:bg-brand-red-dark transition-all duration-500 shadow-[0_15px_30px_rgba(230,0,0,0.3)] uppercase tracking-[0.2em] disabled:opacity-50"
+                >
+                  {missionStatus === 'sending' ? 'DEPLOYING...' : missionStatus === 'error' ? 'DEPLOYMENT FAILED - RETRY' : 'DEPLOY MISSION'}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Thank You Popup */}
+      <AnimatePresence>
+        {showThankYou && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          >
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowThankYou(false)} />
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="relative w-full max-w-md glass-card p-10 md:p-14 !rounded-[2.5rem] text-center border-brand-red/20"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="inline-flex items-center justify-center w-20 h-20 bg-brand-red/10 border-2 border-brand-red/30 rounded-full mb-6"
+              >
+                <CheckCircle className="w-10 h-10 text-brand-red" />
+              </motion.div>
+              <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter italic mb-4">Thank You!</h3>
+              <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-2">Your mission has been deployed successfully.</p>
+              <p className="text-brand-red font-bold text-sm md:text-base uppercase tracking-widest">Our team will contact you within 4 hours.</p>
+              <div className="mt-8 w-full h-1 bg-zinc-900 rounded-full overflow-hidden border border-white/5">
+                <motion.div 
+                  animate={{ width: ['0%', '100%'] }}
+                  transition={{ duration: 5, ease: "linear" }}
+                  className="h-full bg-brand-red"
+                  onAnimationComplete={() => setShowThankYou(false)}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Footer */}
       <footer className="pt-20 md:pt-32 pb-12 relative z-10 bg-black text-center md:text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -400,9 +577,7 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16">
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center justify-center md:justify-start gap-3 mb-6 md:mb-8">
-                  <div className="w-10 h-10 bg-brand-red flex items-center justify-center rounded-xl">
-                    <span className="text-white font-black text-lg">SN</span>
-                  </div>
+                  <img src="/logo.jpeg" alt="StackNova Labs" className="w-10 h-10 rounded-xl object-cover border border-white/10" />
                   <span className="font-mono font-bold text-xl md:text-2xl tracking-tighter text-white uppercase italic">
                     STACKNOVA <span className="text-brand-red">LABS</span>
                   </span>
